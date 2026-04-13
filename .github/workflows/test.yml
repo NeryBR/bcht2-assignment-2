@@ -1,0 +1,38 @@
+name: Foundry CI
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    name: Foundry Project Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: recursive
+
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: nightly
+
+      - name: Run tests
+        run: forge test -vv
+
+      - name: Generate Gas Report
+        run: forge test --gas-report > gas_report.txt
+
+      - name: Upload Gas Report
+        uses: actions/upload-artifact@v3
+        with:
+          name: gas-report
+          path: gas_report.txt
+
+  slither:
+    name: Slither Analysis
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Run Slither
+        uses: crytic/slither-action@v0.3.0
+        continue-on-error: true # Чтобы билд не падал из-за мелких ворнингов
