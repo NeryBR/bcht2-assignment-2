@@ -17,7 +17,7 @@ jobs:
           version: nightly
 
       - name: Run tests
-        run: forge test -vv
+        run: forge test --no-match-path "test/Fork.t.sol" -vv
 
       - name: Generate Gas Report
         run: forge test --gas-report > gas_report.txt
@@ -32,7 +32,9 @@ jobs:
     name: Slither Analysis
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
       - name: Run Slither
         uses: crytic/slither-action@v0.3.0
         continue-on-error: true # Чтобы билд не падал из-за мелких ворнингов
